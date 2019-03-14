@@ -6,7 +6,7 @@ public class CustomerDetails {
 	private String lastName;
 	private String emailId;
 	private String password;
-	private Long pancardNumber;
+	private long pancardNumber;
 	private long aadharCardNumber;
 	private String address;
 	private long mobileNo;
@@ -39,8 +39,8 @@ public class CustomerDetails {
 	public Long getPancardNumber() {
 		return pancardNumber;
 	}
-	public void setPancardNumber(Long pancardNumber) {
-		this.pancardNumber = pancardNumber;
+	public void setPancardNumber(long panCardNumber) {
+		this.pancardNumber = panCardNumber;
 	}
 	public long getAadharCardNumber() {
 		return aadharCardNumber;

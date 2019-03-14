@@ -4,6 +4,11 @@ import java.util.Scanner;
 
 import com.cg.bankOracle.beans.CustomerDetails;
 import com.cg.bankOracle.beans.TransactionDetails;
+import com.cg.bankOracle.exception.AadharException;
+import com.cg.bankOracle.exception.BalanceException;
+import com.cg.bankOracle.exception.LoginException;
+import com.cg.bankOracle.exception.MobileNoException;
+import com.cg.bankOracle.exception.ToAccountException;
 import com.cg.bankOracle.service.CustomerService;
 import com.cg.bankOracle.service.CustomerServiceImpl;
 import com.cg.bankOracle.service.TransactionService;
@@ -20,6 +25,7 @@ public class App
 	static CustomerService customerService=new CustomerServiceImpl();
 	static TransactionDetails transactionDetails=new TransactionDetails();
 	static TransactionService transactionService=new TransactionServiceImpl();
+	static CustomerServiceImpl customerServiceImpl=new CustomerServiceImpl();
 	
     public static void main( String[] args )
     {
@@ -43,15 +49,30 @@ public class App
     	customerDetails.setPancardNumber(s.nextLong());
     	System.out.println("Enter Aadhar Card Number: ");
     	customerDetails.setAadharCardNumber(s.nextLong());
+    	if(customerServiceImpl.validateAadhar(customerDetails.getAadharCardNumber())) {
     	System.out.println("Enter Address: ");
     	customerDetails.setAddress(s.next());
     	System.out.println("Enter Mobile No :");
     	customerDetails.setMobileNo(s.nextLong());
+    	if(customerServiceImpl.validateMobileNo(customerDetails.getMobileNo())) {
     	customerDetails.setBalance(0);
     	
     	long accountNumber=customerService.registration(customerDetails);
     	
     	System.out.println("Successfully Registered ! Your Account Number is "+accountNumber);
+    	}else {
+    		try {
+    			throw new MobileNoException();
+    		}catch(MobileNoException e) {  			
+    		}
+    	}
+    	}
+    	else {
+    		try {
+    			throw new AadharException();
+    		}catch(AadharException e) {  			
+    		}
+    	}
     		break;
     		
     	case 2 : System.out.println("Enter Account Number: ");
@@ -67,24 +88,32 @@ public class App
     			
     			int ch1=s.nextInt();
     			
-    			double amount=0,balance=0;
+    			double amount=0;
     			
     			switch(ch1) {
     			case 1 : System.out.println("Enter the amount: ");
     			amount=s.nextDouble();
-    			balance=transactionService.deposit(accountNumber1, amount);
-    			System.out.println("Your balance is "+balance);
+    			customerDetails=transactionService.deposit(accountNumber1, amount);
+    			System.out.println("Your balance is "+customerDetails.getBalance());
     			
     				break;
     				
     			case 2 : System.out.println("Enter the amount: ");
     			amount=s.nextDouble();
-    			balance=transactionService.withdrawal(accountNumber1, amount);
-    			System.out.println("Your balance is "+balance);
+    			customerDetails=transactionService.withdrawal(accountNumber1, amount);
+    			if(customerDetails!=null)
+    			System.out.println("Your balance is "+customerDetails.getBalance());
+    			else {
+    				try {
+    					throw new BalanceException();
+    				}catch(BalanceException e) {
+    					
+    				}
+    			}
     				break;
     			
-    			case 3 : balance=transactionService.showBalance(accountNumber1);
-    			System.out.println("Your balance is "+balance);
+    			case 3 : customerDetails=transactionService.showBalance(accountNumber1);
+    			System.out.println("Your balance is "+customerDetails.getBalance());
     				break;
     				
     			case 4 : System.out.println("Enter the account number to which you want to transfer: ");
@@ -93,7 +122,24 @@ public class App
     			transactionDetails.setAmountTransfered(s.nextDouble());
     			transactionDetails.setFromAccountNo(accountNumber1);
     			
-    			System.out.println("Transfered successfully ! Your transaction id is "+transactionService.fundTransfer(transactionDetails));
+    			int i=transactionService.fundTransfer(transactionDetails);
+    			
+    			if(i==0) {
+    				try {
+    					throw new ToAccountException();
+    				}catch(ToAccountException e) {
+    					
+    				}
+    			}
+    			else if(i==1){
+    				try {
+    					throw new BalanceException();
+    				}catch(BalanceException e) {
+    					
+    				}
+    			}
+    			else    			
+    				System.out.println("Transfered successfully ! Your transaction id is "+i);
     			
     				break;
     				
@@ -107,8 +153,13 @@ public class App
     		}
     	}
     	else
-    		System.out.println("Wrong account number or password");
-    		break;
+    		try {
+    			throw new LoginException();
+    		}catch(LoginException e) {
+    			
+    		}
+    			break;
+    		
     		
     	case 3 : System.exit(0);
     	

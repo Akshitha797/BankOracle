@@ -17,5 +17,20 @@ public class CustomerServiceImpl implements CustomerService{
 		
 		return customerDao.Login(accountNumber, password);
 	}
+	public boolean validateMobileNo(long mobileNo) {
+		String mobile=String.valueOf(mobileNo);
+		if(mobile.length()==10)
+			return true;
+		else 
+			return false;
+	}
+	
+	public boolean validateAadhar(long aadharCardNo) {
+		String aadhar=String.valueOf(aadharCardNo);
+		if(aadhar.length() == 12)
+			return true;
+		else
+			return false;
+	}
 
 }
